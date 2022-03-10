@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\NotesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,4 +25,12 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
     Route::post('/login', [UserController::class, 'login']);
     Route::get('/profile', [UserController::class, 'profile']);
     Route::post('/logout', [UserController::class, 'logout']);
+
+    Route::post('/forgotpassword', [ForgotPasswordController::class, 'forgotPassword']);
+    Route::post('/resetpassword', [ForgotPasswordController::class, 'resetpassword']);
+
+    Route::post('/createNotes', [NotesController::class, 'createNotes']);
+    Route::get('/displayNoteById', [NotesController::class, 'displayNoteById']);
+    Route::post('/updateNoteById', [NotesController::class, 'updateNoteById']);
+    Route::post('/deleteNoteById', [NotesController::class, 'deleteNoteById']);
 });
