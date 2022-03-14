@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\NotesController;
+use App\Http\Controllers\LabelController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,7 +31,17 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
     Route::post('/resetpassword', [ForgotPasswordController::class, 'resetpassword']);
 
     Route::post('/createNotes', [NotesController::class, 'createNotes']);
+    Route::get('/displayNotes', [NotesController::class, 'displayNotes']);
     Route::get('/displayNoteById', [NotesController::class, 'displayNoteById']);
     Route::post('/updateNoteById', [NotesController::class, 'updateNoteById']);
     Route::post('/deleteNoteById', [NotesController::class, 'deleteNoteById']);
+
+    
+    Route::post('/createLabel', [LabelController::class, 'createLabel']);
+    Route::get('/displayLabel', [LabelController::class, 'displayLabel']);
+    Route::post('/updateLabelById', [LabelController::class, 'updateLabelById']);
+    Route::post('/deleteLabelById', [LabelController::class, 'deleteLabelById']);
+    Route::post('/addLabelByNoteId', [LabelController::class, 'addLabelByNoteId']);
+
+
 });

@@ -16,8 +16,8 @@ class NotesController extends Controller
     public function createNotes(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'required|string|between:2,50',
-            'description' => 'required|string|between:3,1000',
+            'title' => 'required|string|between:2,100',
+            'description' => 'required|string|between:3,800',
         ]);
 
         if ($validator->fails()) {
@@ -30,7 +30,7 @@ class NotesController extends Controller
         $note->user_id = Auth::user()->id;
         $note->save();
 
-        $value = Cache::remember('notes', 3600, function () {
+        Cache::remember('notes', 3600, function () {
             return DB::table('notes')->get();
         });
         Log::info('notes created', ['user_id' => $note->user_id]);
@@ -40,15 +40,14 @@ class NotesController extends Controller
         ]);
     }
 
-
-    public function displayNoteById()
+    public function displayNotes()
     {
-        $User = JWTAuth::parseToken()->authenticate();
-        $value = Cache::remember('notes', 3600, function () {
+        $user = JWTAuth::parseToken()->authenticate();
+        Cache::remember('notes', 3600, function () {
             return DB::table('notes')->get();
         });
-        if ($User) {
-            $user = Notes::where('user_id', '=', $User->id)->get();
+        if ($user) {
+            $user = Notes::where('user_id', '=', $user->id)->get();
         }
         if ($user == '[]') {
             return response()->json(['message' => 'Notes not found'], 404);
@@ -59,6 +58,7 @@ class NotesController extends Controller
             'Notes' => $user
         ], 200);
     }
+
     public function updateNoteById(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -74,7 +74,7 @@ class NotesController extends Controller
         $id = $request->input('id');
         $currentUser = JWTAuth::parseToken()->authenticate();
         $note = $currentUser->notes()->find($id);
-        $value = Cache::remember('notes', 3600, function () {
+        Cache::remember('notes', 3600, function () {
             return DB::table('notes')->get();
         });
 
@@ -104,7 +104,7 @@ class NotesController extends Controller
         $id = $request->input('id');
         $currentUser = JWTAuth::parseToken()->authenticate();
         $note = $currentUser->notes()->find($id);
-        $value = Cache::remember('notes', 3600, function () {
+        Cache::remember('notes', 3600, function () {
             return DB::table('notes')->get();
         });
 
