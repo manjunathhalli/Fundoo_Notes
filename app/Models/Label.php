@@ -16,8 +16,8 @@ class Label extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function note()
-    {
-        return $this->belongsTo(Notes::class);
-    }
+    // public function note()
+    // {
+    //     return $this->belongsTo(Notes::class);
+    // }
 }

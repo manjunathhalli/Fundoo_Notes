@@ -32,16 +32,19 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
 
     Route::post('/createNotes', [NotesController::class, 'createNotes']);
     Route::get('/displayNotes', [NotesController::class, 'displayNotes']);
-    Route::get('/displayNoteById', [NotesController::class, 'displayNoteById']);
+    Route::post('/displayNoteById', [NotesController::class, 'displayNoteById']);
     Route::post('/updateNoteById', [NotesController::class, 'updateNoteById']);
     Route::post('/deleteNoteById', [NotesController::class, 'deleteNoteById']);
+    Route::post('/pinNoteById', [NotesController::class, 'pinNoteById']);
+    Route::post('/archiveNoteById', [NotesController::class, 'archiveNoteById']);
+    Route::post('/colourNoteById', [NotesController::class, 'colourNoteById']);
 
-    
+
     Route::post('/createLabel', [LabelController::class, 'createLabel']);
-    Route::get('/displayLabel', [LabelController::class, 'displayLabel']);
-    Route::post('/updateLabelById', [LabelController::class, 'updateLabelById']);
-    Route::post('/deleteLabelById', [LabelController::class, 'deleteLabelById']);
-    Route::post('/addLabelByNoteId', [LabelController::class, 'addLabelByNoteId']);
-
-
+    Route::get('/readAllLabel', [LabelController::class, 'readAllLabel']);
+    Route::post('/updateLabel', [LabelController::class, 'updateLabel']);
+    Route::post('/deleteLabel', [LabelController::class, 'deleteLabel']);
+    Route::post('/displyLabelById', [LabelController::class, 'displyLabelById']);
+    Route::post('/addNoteLabel', [LabelController::class, 'addNoteLabel']);
+    Route::post('/deleteNoteLabel', [LabelController::class, 'deleteNoteLabel']);
 });
