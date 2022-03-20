@@ -8,9 +8,18 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 
 /**
- * @OA\Info(
- *    title="Your super  ApplicationAPI",
- *    version="1.0.0",
+ * @OA\Swagger(
+ *   basePath="",
+ *   schemes= {"http", "https"},
+ *   host = L5_SWAGGER_CONST_HOST,
+ *   @OA\Info(
+ *     version="1.0.0",
+ *     title="Swagger Integration with PHP Laravel",
+ *     description="Integrate Swagger in Laravel application",
+ *   @OA\Contact(
+ *          email="manjunathhalli629@gmail.com"
+ *     ),
+ *   )
  * )
  */
 class Controller extends BaseController

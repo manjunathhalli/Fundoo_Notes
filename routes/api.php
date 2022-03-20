@@ -61,6 +61,6 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
     Route::post('/displayNoteByCollaborator', [CollaboratorController::class,'displayNoteByCollaborator']);
     Route::post('/updateNoteByCollaborator', [CollaboratorController::class,'updateNoteByCollaborator']);
     Route::post('/removeCollaborator', [CollaboratorController::class,'removeCollaborator']);
-    
+    Route::get('/getAllCollaborators', [CollaboratorController::class,'getAllCollaborators']);
     
 });

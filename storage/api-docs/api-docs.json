@@ -1,31 +1,937 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Your super  ApplicationAPI",
+        "title": "Swagger Integration with PHP Laravel",
+        "description": "Integrate Swagger in Laravel application",
+        "contact": {
+            "email": "manjunathhalli629@gmail.com"
+        },
         "version": "1.0.0"
     },
     "paths": {
-        "/api/register": {
+        "/api/auth/addCollaboratorByNoteId": {
             "post": {
-                "summary": "register",
-                "description": "register the user for login",
-                "operationId": "2f25885f3b6f61ca11724ec302d2e439",
+                "summary": "Add Collaborator to specific Note ",
+                "description": " Add Colaborator to specific Note ",
+                "operationId": "980d942fbef886155f252a99efe2f62a",
                 "requestBody": {
                     "content": {
                         "multipart/form-data": {
                             "schema": {
                                 "required": [
-                                    "firstname",
-                                    "lastname",
+                                    "note_id",
+                                    "email"
+                                ],
+                                "properties": {
+                                    "note_id": {
+                                        "type": "integer"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Collaborator created Sucessfully"
+                    },
+                    "404": {
+                        "description": "Invalid authorization token"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/updateNoteByCollaborator": {
+            "post": {
+                "summary": "Edit the note through Collaborator ",
+                "description": " Edit the note through Collaborator",
+                "operationId": "7360a7b63c332d5ea017e7caac45dfc0",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "note_id",
+                                    "description"
+                                ],
+                                "properties": {
+                                    "note_id": {
+                                        "type": "integer"
+                                    },
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Note updated Sucessfully"
+                    },
+                    "404": {
+                        "description": "Invalid authorization token"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/removeCollaborator": {
+            "post": {
+                "summary": "Remove Collaborator from specific Note ",
+                "description": " Remove Collaborator from specific Note ",
+                "operationId": "0ece06f261e90482228201a9bd103a8a",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "note_id",
+                                    "email"
+                                ],
+                                "properties": {
+                                    "note_id": {
+                                        "type": "integer"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Collaborator deleted Sucessfully"
+                    },
+                    "404": {
+                        "description": "Collaborater Not created"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/getAllCollaborators": {
+            "get": {
+                "summary": "Display all Colaborators",
+                "description": " Display all Colaborators ",
+                "operationId": "c91bdd51cfdc430e5ea6d642e10250ef",
+                "requestBody": {},
+                "responses": {
+                    "201": {
+                        "description": "Fetched Collaborators Successfully"
+                    },
+                    "404": {
+                        "description": "Invalid authorization token"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/forgotpassword": {
+            "post": {
+                "summary": "forgot password",
+                "description": "forgot user password",
+                "operationId": "186a73907a51e79b61ee87564453da94",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Reset password link sent to email id"
+                    },
+                    "404": {
+                        "description": "wrong user with thiss email id"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/resetpassword": {
+            "post": {
+                "summary": "reset password",
+                "description": "reset user password",
+                "operationId": "70a80c24319db6e6fd175bbab31d79bc",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "new_password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "new_password": {
+                                        "type": "password"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Password reset successfull!"
+                    },
+                    "400": {
+                        "description": "wrong user with this Email ID"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/createLabel": {
+            "post": {
+                "summary": "Create Label",
+                "description": " Create Label ",
+                "operationId": "c27db53decb5a6bcfdb5655c217ea42f",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "labelname"
+                                ],
+                                "properties": {
+                                    "labelname": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Label added Sucessfully"
+                    },
+                    "404": {
+                        "description": "Invalid authorization token"
+                    },
+                    "401": {
+                        "description": "Label Name already exists"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/readAllLabel": {
+            "get": {
+                "summary": "Display Label",
+                "description": " Display Label ",
+                "operationId": "89af48ef0e4d7c036d29621b91b5924a",
+                "requestBody": {},
+                "responses": {
+                    "404": {
+                        "description": "invalid authorization token"
+                    },
+                    "201": {
+                        "description": "Labels Fetched Successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/updateLabel": {
+            "post": {
+                "summary": "Update Label",
+                "description": " Update label ",
+                "operationId": "4f3bd36410b0ea6dbc588ba7cd8b4a53",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "id",
+                                    "labelname"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "integer"
+                                    },
+                                    "labelname": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Label updated Sucessfully"
+                    },
+                    "401": {
+                        "description": "Invalid authorization token"
+                    },
+                    "404": {
+                        "description": "Label not Found"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/deleteLabel": {
+            "post": {
+                "summary": "Delete Label",
+                "description": " Delete label ",
+                "operationId": "9b1373793e3180b0630bc9a0966139f9",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "id"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Label Sucessfully deleted"
+                    },
+                    "401": {
+                        "description": "Invalid authorization token"
+                    },
+                    "404": {
+                        "description": "label not Found"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/addNoteLabel": {
+            "post": {
+                "summary": "Add Label By Note Id",
+                "description": " Add Label By Note Id ",
+                "operationId": "50bb45d07df1da9f1522471f208053fc",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "label_id",
+                                    "note_id"
+                                ],
+                                "properties": {
+                                    "label_id": {
+                                        "type": "integer"
+                                    },
+                                    "note_id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Label notes added Successfully"
+                    },
+                    "401": {
+                        "description": "Invalid authorization token"
+                    },
+                    "409": {
+                        "description": "Note Already have a label"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/deleteNoteLabel": {
+            "post": {
+                "summary": "delete note label",
+                "description": "delete note label",
+                "operationId": "83506308dfb31c94ac89df41a52cabce",
+                "requestBody": {
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "label_id",
+                                    "note_id"
+                                ],
+                                "properties": {
+                                    "label_id": {
+                                        "description": "Request",
+                                        "type": "integer"
+                                    },
+                                    "note_id": {
+                                        "description": "Request",
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Label successfully deleted"
+                    },
+                    "404": {
+                        "description": "Note not found with this label"
+                    },
+                    "401": {
+                        "description": "Invalid authorization token"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/displayNoteLabel": {
+            "get": {
+                "summary": "Display Label note",
+                "description": " Display LabelNote ",
+                "operationId": "e986299fe7196ca36e72664266d74587",
+                "requestBody": {},
+                "responses": {
+                    "404": {
+                        "description": "notes not Found"
+                    },
+                    "200": {
+                        "description": "labelsNote are Fetched Successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/createNotes": {
+            "post": {
+                "summary": "create note",
+                "description": "create user note",
+                "operationId": "8aa521064947715a5fdc7f892ef0117a",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "description"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "notes created successfully"
+                    },
+                    "401": {
+                        "description": "Invalid authorization token"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/displayNotes": {
+            "get": {
+                "summary": "display Notes",
+                "description": "user display Notes",
+                "operationId": "7474ea89869a759c2967ea66ebc13368",
+                "requestBody": {},
+                "responses": {
+                    "201": {
+                        "description": "Fetched Notes Successfully"
+                    },
+                    "401": {
+                        "description": "Invalid authorization token"
+                    },
+                    "404": {
+                        "description": "Notes Not Found"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/updateNoteById": {
+            "post": {
+                "summary": "update note",
+                "description": "update user note",
+                "operationId": "d5fa69313342590d7ae2dd4b243a1d65",
+                "requestBody": {
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "id",
+                                    "title",
+                                    "description"
+                                ],
+                                "properties": {
+                                    "id": {},
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Note successfully updated"
+                    },
+                    "404": {
+                        "description": "Notes not found"
+                    },
+                    "401": {
+                        "description": "Invalid authorization token"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/deleteNoteById": {
+            "post": {
+                "summary": "delete note",
+                "description": "delete user note",
+                "operationId": "6fa2f7be0614f8bfc72ad4a90d037160",
+                "requestBody": {
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "id"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Note deleted Successfully"
+                    },
+                    "404": {
+                        "description": "Notes not found"
+                    },
+                    "401": {
+                        "description": "Invalid Authorization token"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/pinNoteById": {
+            "post": {
+                "summary": "Pin Note",
+                "description": " Pin Note ",
+                "operationId": "2e1d7173b89fa51f02111ed713e89efa",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "id"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Note Pinned Sucessfully"
+                    },
+                    "404": {
+                        "description": "Notes not Found"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/getAllPinnedNotes": {
+            "get": {
+                "summary": "Display All Pinned Notes",
+                "description": " Display All Pinned Notes ",
+                "operationId": "b0009c3aaede3bdd703897789891b65b",
+                "requestBody": {},
+                "responses": {
+                    "403": {
+                        "description": "Invalid token"
+                    },
+                    "201": {
+                        "description": "Fetched Pinned Notes Successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/archiveNoteById": {
+            "post": {
+                "summary": "Archive Note",
+                "description": " Archive Note ",
+                "operationId": "d161079104ec20f554ac3a10c5e01394",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "id"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Note Archived Sucessfully"
+                    },
+                    "404": {
+                        "description": "Notes not Found"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/getAllArchivedNotes": {
+            "get": {
+                "summary": "Display All Archived Notes",
+                "description": " Display All Archived Notes ",
+                "operationId": "ce432f43a3de479cf5862afcc0f0bb72",
+                "requestBody": {},
+                "responses": {
+                    "403": {
+                        "description": "Invalid token"
+                    },
+                    "201": {
+                        "description": "Fetched Archived Notes"
+                    },
+                    "404": {
+                        "description": "Notes not found"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/colourNoteById": {
+            "post": {
+                "summary": "Colour Note",
+                "description": " Colour Note ",
+                "operationId": "8e86cf0f3b2c3fa1727daa2f31814261",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "id",
+                                    "colour"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "integer"
+                                    },
+                                    "colour": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Note coloured Sucessfully"
+                    },
+                    "404": {
+                        "description": "Notes not Found"
+                    },
+                    "400": {
+                        "description": "Colour Not Specified in the List"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/paginationNote": {
+            "get": {
+                "summary": "Display Paginate Notes",
+                "description": " Display Paginate Notes ",
+                "operationId": "3b08f9755ac9b6beaabc79a0a282b9da",
+                "requestBody": {},
+                "responses": {
+                    "201": {
+                        "description": "Pagination applied to all Notes"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/searchAllNotes": {
+            "post": {
+                "summary": "Search Note",
+                "description": " Search Note ",
+                "operationId": "f53ddd4bbcb97d9de147c323212df507",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "search"
+                                ],
+                                "properties": {
+                                    "search": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Note Fetched Sucessfully"
+                    },
+                    "404": {
+                        "description": "No results"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/register": {
+            "post": {
+                "summary": "register",
+                "description": "register the user for login",
+                "operationId": "47d5ee6b3638073a988b692b1a5902cf",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "first_name",
+                                    "last_name",
                                     "email",
                                     "password",
                                     "confirm_password"
                                 ],
                                 "properties": {
-                                    "firstname": {
+                                    "first_name": {
                                         "type": "string"
                                     },
-                                    "lastname": {
+                                    "last_name": {
                                         "type": "string"
                                     },
                                     "email": {
@@ -48,12 +954,108 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "User successfully registered"
-                    },
-                    "401": {
-                        "description": "The email has already been taken"
+                        "description": "User Scceesfully Registerd"
                     }
                 }
+            }
+        },
+        "/api/auth/login": {
+            "post": {
+                "summary": "login",
+                "description": " login ",
+                "operationId": "224ca9cc21e92b4e3291419882455b09",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successfull"
+                    },
+                    "401": {
+                        "description": "email not found register first"
+                    }
+                }
+            }
+        },
+        "/api/auth/profile": {
+            "get": {
+                "summary": "userProfile",
+                "description": "userProfile ",
+                "operationId": "bd7a629d597624c02b0905ec4fb79202",
+                "requestBody": {},
+                "responses": {
+                    "404": {
+                        "description": "Invalid authorization token"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/logout": {
+            "post": {
+                "summary": "logout",
+                "description": " logout ",
+                "operationId": "53d83c37c7970aebebdc61ca4971d22e",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "token"
+                                ],
+                                "properties": {
+                                    "token": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User successfully signed out"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "Bearer": {
+                "type": "http",
+                "description": "Laravel bearer token authentication",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
             }
         }
     },

@@ -12,6 +12,40 @@ use App\Models\User;
 
 class CollaboratorController extends Controller
 {
+
+    /**
+     * This function takes User access token and checks if it is
+     * authorised or not if so and takes note_id, email if those 
+     * parameters are valid it will successfully creates a 
+     * collaborator.
+     * 
+     * @return JsonResponse
+     */
+    /**
+     * @OA\Post(
+     *   path="/api/auth/addCollaboratorByNoteId",
+     *   summary="Add Collaborator to specific Note ",
+     *   description=" Add Colaborator to specific Note ",
+     *   @OA\RequestBody(
+     *         @OA\JsonContent(),
+     *         @OA\MediaType(
+     *            mediaType="multipart/form-data",
+     *            @OA\Schema(
+     *               type="object",
+     *               required={ "note_id","email"},
+     *               @OA\Property(property="note_id", type="integer"),
+     *               @OA\Property(property="email", type="string"),
+     *            ),
+     *        ),
+     *    ),
+     *   @OA\Response(response=201, description="Collaborator created Sucessfully"),
+     *   @OA\Response(response=404, description="Invalid authorization token"),
+     *   security = {
+     * {
+     * "Bearer" : {}}}
+     * )
+     */
+
     public function addCollaboratorByNoteId(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -57,6 +91,40 @@ class CollaboratorController extends Controller
         }
         return response()->json(['message' => 'Invalid authorization token'], 404);
     }
+
+
+    /**
+     * This function takes User access token of collaborator and
+     * checks if it is authorised or not if so and takes note details
+     * as parametres if those are valid updates the notes successfully. 
+     * 
+     * @return JsonResponse
+     */
+    /**
+     * @OA\Post(
+     *   path="/api/auth/updateNoteByCollaborator",
+     *   summary="Edit the note through Collaborator ",
+     *   description=" Edit the note through Collaborator",
+     *   @OA\RequestBody(
+     *         @OA\JsonContent(),
+     *         @OA\MediaType(
+     *            mediaType="multipart/form-data",
+     *            @OA\Schema(
+     *               type="object",
+     *               required={"title" , "note_id" , "description"},
+     *               @OA\Property(property="note_id", type="integer"),
+     *               @OA\Property(property="title", type="string"),
+     *               @OA\Property(property="description", type="string"),
+     *            ),
+     *        ),
+     *    ),
+     *   @OA\Response(response=201, description="Note updated Sucessfully"),
+     *   @OA\Response(response=404, description="Invalid authorization token"),
+     *   security = {
+     * {
+     * "Bearer" : {}}}
+     * )
+     */
 
     public function updateNoteByCollaborator(Request $request)
     {
@@ -127,6 +195,38 @@ class CollaboratorController extends Controller
         ], 201);
     }
 
+
+    /**
+     * This function takes User access token and checks if it is 
+     * authorised or not if so and takes note_id and collabarator email
+     * as parametres if those are valid deletes the notes successfully. 
+     * 
+     * @return JsonResponse
+     */
+    /**
+     * @OA\Post(
+     *   path="/api/auth/removeCollaborator",
+     *   summary="Remove Collaborator from specific Note ",
+     *   description=" Remove Collaborator from specific Note ",
+     *   @OA\RequestBody(
+     *         @OA\JsonContent(),
+     *         @OA\MediaType(
+     *            mediaType="multipart/form-data",
+     *            @OA\Schema(
+     *               type="object",
+     *               required={"note_id","email"},
+     *               @OA\Property(property="note_id", type="integer"),
+     *              @OA\Property(property="email", type="string"),
+     *            ),
+     *        ),
+     *    ),
+     *   @OA\Response(response=201, description="Collaborator deleted Sucessfully"),
+     *   @OA\Response(response=404, description="Collaborater Not created"),
+     *   security = {
+     * {
+     * "Bearer" : {}}}
+     * )
+     */
     public function removeCollaborator(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -161,5 +261,46 @@ class CollaboratorController extends Controller
             }
             return response()->json(['message' => 'Collaborator could not deleted'], 404);
         }
+    }
+
+
+    /**
+     * This function takes User access token and checks if it is
+     *  authorised or not if so it returns all the collabarators
+     *  he has created.
+     * 
+     * @return JsonResponse
+     */
+    /**
+     * @OA\Get(
+     *   path="/api/auth/getAllCollaborators",
+     *   summary="Display all Colaborators",
+     *   description=" Display all Colaborators ",
+     *   @OA\RequestBody(
+     *         
+     *    ),
+     *   @OA\Response(response=201, description="Fetched Collaborators Successfully"),
+     *   @OA\Response(response=404, description="Invalid authorization token"),
+     *   security = {
+     * {
+     * "Bearer" : {}}}
+     * )
+     */
+    public function getAllCollaborators()
+    {
+        $currentUser = JWTAuth::parseToken()->authenticate();
+
+        if ($currentUser) {
+            $collaborator = Collaborator::select('note_id', 'email')->where([['user_id', '=', $currentUser->id],])->get();
+
+            if ($collaborator == '[]') {
+                return response()->json(['message' => 'Collaborators not found'], 404);
+            }
+            return response()->json([
+                'message' => 'Fetched Collaborators Successfully',
+                'Collaborator' => $collaborator
+            ], 201);
+        }
+        return response()->json(['message' => 'Invalid authorization token'], 403);
     }
 }
