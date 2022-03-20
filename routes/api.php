@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\NotesController;
 use App\Http\Controllers\LabelController;
+use App\Http\Controllers\CollaboratorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,9 +37,15 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
     Route::post('/updateNoteById', [NotesController::class, 'updateNoteById']);
     Route::post('/deleteNoteById', [NotesController::class, 'deleteNoteById']);
     Route::post('/pinNoteById', [NotesController::class, 'pinNoteById']);
+    Route::post('/unpinNoteById', [NotesController::class, 'unpinNoteById']);
+    Route::get('/getAllPinnedNotes', [NotesController::class, 'getAllPinnedNotes']);
     Route::post('/archiveNoteById', [NotesController::class, 'archiveNoteById']);
+    Route::post('/unarchiveNoteById', [NotesController::class, 'unarchiveNoteById']);
+    Route::get('/getAllArchivedNotes', [NotesController::class, 'getAllArchivedNotes']);
     Route::post('/colourNoteById', [NotesController::class, 'colourNoteById']);
-
+    Route::post('/paginationNote', [NotesController::class, 'paginationNote']);
+    Route::post('/searchAllNotes', [NotesController::class, 'searchAllNotes']);
+    
 
     Route::post('/createLabel', [LabelController::class, 'createLabel']);
     Route::get('/readAllLabel', [LabelController::class, 'readAllLabel']);
@@ -47,4 +54,13 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
     Route::post('/displyLabelById', [LabelController::class, 'displyLabelById']);
     Route::post('/addNoteLabel', [LabelController::class, 'addNoteLabel']);
     Route::post('/deleteNoteLabel', [LabelController::class, 'deleteNoteLabel']);
+    Route::post('/displayNoteLabel', [LabelController::class, 'displayNoteLabel']);
+    
+
+    Route::post('/addCollaboratorByNoteId', [CollaboratorController::class,'addCollaboratorByNoteId']);
+    Route::post('/displayNoteByCollaborator', [CollaboratorController::class,'displayNoteByCollaborator']);
+    Route::post('/updateNoteByCollaborator', [CollaboratorController::class,'updateNoteByCollaborator']);
+    Route::post('/removeCollaborator', [CollaboratorController::class,'removeCollaborator']);
+    
+    
 });

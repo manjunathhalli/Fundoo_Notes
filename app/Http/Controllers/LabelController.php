@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Label;
+use App\Models\Notes;
 use App\Models\LabelNotes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -217,6 +218,7 @@ class LabelController extends Controller
             'message' => 'Invalid authorization token'
         ], 401);
     }
+
     public function deleteNoteLabel(Request $req)
     {
         $validator = Validator::make($req->all(), [
@@ -251,5 +253,33 @@ class LabelController extends Controller
             'status' => 401,
             'message' => 'Invalid authorization token'
         ], 401);
+    }
+
+    public function displayNoteLabel()
+    {
+        $user = JWTAuth::parseToken()->authenticate();
+        if (!$user) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Invalid authorization token'
+            ], 404);
+        }
+
+        $labelnotes = LabelNotes::leftJoin('notes', 'notes.id', '=', 'label_notes.id')
+            ->leftJoin('lables', 'lables.id', '=', 'label_notes.label_id')
+            ->select('label_notes.id', 'lables.labelname', 'notes.title', 'notes.description', 'notes.pin', 'notes.archive', 'notes.colour')
+            ->where('label_notes.user_id', Auth::user()->id)->get();
+
+        if (!$labelnotes) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Notes not found'
+            ], 401);
+        }
+        return response()->json([
+            'status' => 201,
+            'message' => 'Labelnotes Fetched  Successfully',
+            'Labelnotes' => $labelnotes,
+        ], 201);
     }
 }

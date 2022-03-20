@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateLablesTable extends Migration
+class CreateCollaboratorsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,16 @@ class CreateLablesTable extends Migration
      */
     public function up()
     {
-        Schema::create('lables', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('collaborators', function (Blueprint $table) {
+            $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->string('labelname');
+            $table->unsignedInteger('note_id');
+            $table->string('email');
+            $table->foreign('note_id')
+                ->references('id')
+                ->on('notes')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')
@@ -24,10 +30,8 @@ class CreateLablesTable extends Migration
                 ->onUpdate('cascade');
             $table->timestamps();
         });
-      
     }
-       
-
+    
     /**
      * Reverse the migrations.
      *
@@ -35,6 +39,6 @@ class CreateLablesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('lables');
+        Schema::dropIfExists('collaborators');
     }
 }

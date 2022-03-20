@@ -22,11 +22,36 @@ class UserController extends Controller
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
+    //  /**
+    //  * @OA\Post(
+    //  *   path="/api/register",
+    //  *   summary="register",
+    //  *   description="register the user for login",
+    //  *   @OA\RequestBody(
+    //  *         @OA\JsonContent(),
+    //  *         @OA\MediaType(
+    //  *            mediaType="multipart/form-data",
+    //  *            @OA\Schema(
+    //  *               type="object",
+    //  *               required={"firstname","lastname","email", "password", "confirm_password"},
+    //  *               @OA\Property(property="firstname", type="string"),
+    //  *               @OA\Property(property="lastname", type="string"),
+    //  *               @OA\Property(property="email", type="string"),
+    //  *               @OA\Property(property="password", type="password"),
+    //  *               @OA\Property(property="confirm_password", type="password")
+    //  *            ),
+    //  *        ),
+    //  *    ),
+    //  *   @OA\Response(response=201, description="User successfully registered"),
+    //  *   @OA\Response(response=401, description="The email has already been taken"),
+    //  * )
+     
+    
     /**
      * Register a User.
      * path="api/register",
      * description="register the user for login",
-     * required=("firs_tname","last_name", "email", "password", "confirm_password")
+     * required=("first_name","last_name", "email", "password", "confirm_password")
      */
     public function register(Request $request)
     {
@@ -52,6 +77,33 @@ class UserController extends Controller
         ], 201);
     }
 
+
+    /**
+ * @OA\Post(
+ * path="/login",
+ * summary="Sign in",
+ * description="Login by email, password",
+ * operationId="authLogin",
+ * tags={"auth"},
+ * @OA\RequestBody(
+ *    required=true,
+ *    description="Pass user credentials",
+ *    @OA\JsonContent(
+ *       required={"email","password"},
+ *       @OA\Property(property="email", type="string", format="email", example="user1@mail.com"),
+ *       @OA\Property(property="password", type="string", format="password", example="PassWord12345"),
+ *       @OA\Property(property="persistent", type="boolean", example="true"),
+ *    ),
+ * ),
+ * @OA\Response(
+ *    response=422,
+ *    description="Wrong credentials response",
+ *    @OA\JsonContent(
+ *       @OA\Property(property="message", type="string", example="Sorry, wrong email address or password. Please try again")
+ *        )
+ *     )
+ * )
+ */
     /**
      * Get a JWT via given credentials.
      * Login a user
