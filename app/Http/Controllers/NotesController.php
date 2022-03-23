@@ -4,16 +4,33 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\FundoNoteException;
 use App\Models\Notes;
+use App\Models\LabelNotes;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use phpDocumentor\Reflection\Types\Nullable;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class NotesController extends Controller
 {
+    public static $colours  =  array(
+        'green' => 'rgb(0,255,0)',
+        'red' => 'rgb(255,0,0)',
+        'blue' => 'rgb(0,0,255)',
+        'yellow' => 'rgb(255,255,0)',
+        'grey' => 'rgb(128,128,128)',
+        'purple' => 'rgb(128,0,128)',
+        'brown' => 'rgb(165,42,42)',
+        'orange' => 'rgb(255,165,0)',
+        'pink' => 'rgb(255,192,203)',
+        'black' => 'rgb(0,0,0)',
+        'silver' => 'rgb(192,192,192)',
+        'teal' => 'rgb(0,128,128)',
+        'white' => 'rgb(255,255,255)',
+    );
     /**
      * @OA\Post(
      *   path="/api/auth/createNotes",
@@ -28,6 +45,9 @@ class NotesController extends Controller
      *               required={"title","description"},
      *               @OA\Property(property="title", type="string"),
      *               @OA\Property(property="description", type="string"),
+     *              @OA\Property(property="pin", type="integer"),
+     *               @OA\Property(property="archive", type="integer"),
+     *              @OA\Property(property="colour", type="string"),
      *            ),
      *        ),
      *    ),
@@ -45,61 +65,73 @@ class NotesController extends Controller
      */
 
     public function createNotes(Request $request)
-    { {
-            $validator = Validator::make($request->all(), [
-                'title' => 'required|string|between:2,50',
-                'description' => 'required|string|between:3,1000',
-            ]);
+    {
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|between:2,50',
+            'description' => 'required|string|between:3,1000',
+            // 'pin'=>'Nullable|between:0,1',
+            // 'archive'=>'Nullable|between:0,1',
+            // 'colour'=>'Nullable|String|between:2,20',
 
-            if ($validator->fails()) {
-                return response()->json($validator->errors()->toJson(), 400);
-            }
-            if (($request->has('pin')) == null) {
-                $pin = 0;
-            } else {
-                $pin = $request->input('pin');
-            }
-            if (($request->has('archive')) == null) {
-                $archive = 0;
-            } else {
-                $archive = $request->input('archive');
-            }
-            if (($request->has('colour')) == null) {
-                $colour = 'rgb(255,255,255)';
-            } else {
-                $colour = $request->input('colour');
-            }
-            if (($request->has('label')) == null) {
-                $label = 0;
-            } else {
-                $label = $request->input('label');
-            }
-            try {
-                $note = new Notes;
-                $note->title = $request->input('title');
-                $note->description = $request->input('description');
-                $note->pin = $pin;
-                $note->archive = $archive;
-                $note->colour = $colour;
-                //$note->labelname = $label;
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+        if (($request->has('pin')) == null) {
+            $pin = 0;
+        } else {
+            $pin = $request->input('pin');
+        }
+        if (($request->has('archive')) == null) {
+            $archive = 0;
+        } else {
+            $archive = $request->input('archive');
+        }
+        if (($request->has('colour')) == null) {
+            $colour = 'rgb(255,255,255)';
+        } else {
+            $colour = $request->input('colour');
+        }
+        if (($request->has('labelname')) == null) {
+            $labelname = '';
+        } else {
+            $labelname = $request->input('label_id');
+        }
+        try {
+            $note = new Notes;
+            $note->title = $request->input('title');
+            $note->description = $request->input('description');
+            $note->pin = $pin;
+            $note->archive = $archive;
+            $note->colour = $colour;
+
+            //  $note->label_id = $request->label_id;
+            //  $labelnotes->note_id = $request->note_id;
+
+            $colour_name = strtolower($request->colour);
+
+            if (isset(NotesController::$colours[$colour_name])) {
+                $note->colour = NotesController::$colours[$colour_name];
                 $note->user_id = Auth::user()->id;
                 $note->save();
                 if (!$note) {
                     throw new FundoNoteException("Invalid Authorization token ", 401);
                 }
-            } catch (FundoNoteException $e) {
-                Log::error('Invalid User');
-                return response()->json([
-                    'status' => $e->statusCode(),
-                    'message' => $e->message()
-                ]);
             }
-            Log::info('notes created', ['user_id' => $note->user_id]);
+        } catch (FundoNoteException $e) {
+            Log::error('Invalid User');
             return response()->json([
-                'status' => 201,
-                'message' => 'notes created successfully'
+                'status' => $e->statusCode(),
+                'message' => $e->message()
             ]);
         }
+        Log::info('notes created', ['user_id' => $note->user_id]);
+
+        return response()->json([
+            'status' => 201,
+            'message' => 'notes created successfully'
+        ]);
     }
 
     /**
@@ -126,30 +158,21 @@ class NotesController extends Controller
     {
         try {
             $user = Auth::user();
-            $value = Cache::remember('notes', 3600, function () {
-                return DB::table('notes')->get();
-            });
             if (!$user) {
                 Log::error('Invalid User');
-                throw new FundooNoteException("Invalid authorization token", 401);
+                throw new FundoNoteException("Invalid authorization token", 401);
             }
-
-            $notes = Notes::leftJoin('collaborators', 'collaborators.note_id', '=', 'notes.id')
-                ->leftJoin('label_notes', 'label_notes.note_id', '=', 'notes.id')
-                ->leftJoin('lables', 'lables.id', '=', 'label_notes.label_id')
-                ->select('notes.id', 'notes.title', 'notes.description', 'notes.pin', 'notes.archive', 'notes.colour', 'lables.labelname', 'collaborators.email as Collaborator')
-                ->where('notes.user_id', Auth::user()->id)->orWhere('collaborators.email', '=', $user->email)->get();
-
-            if (!$notes) {
-                throw new FundooNoteException("Notes not found", 404);
-            }
-
+            $notes = new Notes();
             return response()->json([
                 'status' => 201,
                 'message' => 'Fetched Notes Successfully',
-                'Notes' => $notes
+                $notes->getAllNotes($user)
             ], 201);
-        } catch (FundooNoteException $exception) {
+
+            if (!$notes) {
+                throw new FundoNoteException("Notes not found", 404);
+            }
+        } catch (FundoNoteException $exception) {
             return $exception->message();
         }
     }
@@ -216,10 +239,6 @@ class NotesController extends Controller
             'id' => 'required',
             'title' => 'string|between:2,30',
             'description' => 'string|between:3,1000',
-            // 'pin' => 'int|between:0,1',
-            // 'archive' => 'int|between:0,1',
-            // 'colour' => 'string|max:20',
-            // 'labelname' => 'string|max:20'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 401);
@@ -235,12 +254,19 @@ class NotesController extends Controller
             }
             $note->fill($request->all());
 
-            if ($note->save()) {
-                Log::info('notes updated', ['user_id' => $currentUser, 'note_id' => $request->id]);
-                return response()->json(['message' => 'Note updated Successfully'], 200);
-            }
-            if (!($note->save())) {
-                throw new FundoNoteException("Invalid Authorization token ", 401);
+            $colour_name = strtolower($request->colour);
+
+            if (isset(NotesController::$colours[$colour_name])) {
+                $note->colour = NotesController::$colours[$colour_name];
+                $note->user_id = Auth::user()->id;
+
+                if ($note->save()) {
+                    Log::info('notes updated', ['user_id' => $currentUser, 'note_id' => $request->id]);
+                    return response()->json(['message' => 'Note updated Successfully'], 200);
+                }
+                if (!($note->save())) {
+                    throw new FundoNoteException("Invalid Authorization token ", 401);
+                }
             }
         } catch (FundoNoteException $e) {
             return response()->json(['message' => $e->message(), 'status' => $e->statusCode()]);
@@ -378,42 +404,6 @@ class NotesController extends Controller
         }
     }
 
-    public function unpinNoteById(Request $request)
-    {
-        try {
-            $validator = Validator::make($request->all(), [
-                'id' => 'required',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json($validator->errors()->toJson(), 400);
-            }
-
-            $noteObject = new Notes();
-            $currentUser = JWTAuth::parseToken()->authenticate();
-            $note = $noteObject->noteId($request->id);
-
-            if (!$note) {
-                Log::error('Notes Not Found', ['user' => $currentUser, 'id' => $request->id]);
-                throw new FundooNoteException("Notes not Found", 404);
-            }
-
-            if ($note->pin == 1) {
-                $note->pin = 0;
-                $note->save();
-
-                Log::channel('customLog')->info('note unpin', ['user_id' => $currentUser, 'note_id' => $request->id]);
-                return response()->json([
-                    'status' => 201,
-                    'message' => 'Note Unpinned Sucessfully'
-                ], 201);
-            } else {
-                throw new FundooNoteException("Note already Unpinned", 401);
-            }
-        } catch (FundooNoteException $exception) {
-            return $exception->message();
-        }
-    }
 
     /**
      * This function takes the User access token and checks if it 
@@ -446,19 +436,14 @@ class NotesController extends Controller
             $currentUser = JWTAuth::parseToken()->authenticate();
 
             if ($notes->user_id == auth()->id()) {
-                $usernotes = Notes::leftJoin('collaborators', 'collaborators.note_id', '=', 'notes.id')
-                    ->leftJoin('label_notes', 'label_notes.note_id', '=', 'notes.id')
-                    ->leftJoin('lables', 'lables.id', '=', 'label_notes.label_id')
-                    ->select('notes.id', 'notes.title', 'notes.description', 'notes.pin', 'notes.archive', 'notes.colour', 'collaborators.email as Collaborator', 'lables.labelname')
-                    ->where([['notes.user_id', '=', $currentUser->id], ['pin', '=', 1]])->orWhere('collaborators.email', '=', $currentUser->email)->get();
-
+                $usernotes = new Notes();
+                return response()->json([
+                    'message' => 'Fetched Pinned Notes Successfully',
+                    $usernotes->getAllpin($currentUser)
+                ], 201);
                 if ($usernotes == '[]') {
                     throw new FundooNoteException("Notes not Found", 404);
                 }
-                return response()->json([
-                    'message' => 'Fetched Pinned Notes Successfully',
-                    'notes' => $usernotes
-                ], 201);
             } else {
                 throw new FundooNoteException("Invalid token", 403);
             }
@@ -537,44 +522,6 @@ class NotesController extends Controller
         }
     }
 
-    public function unarchiveNoteById(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'id' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-
-        $noteObject = new Notes();
-        $currentUser = JWTAuth::parseToken()->authenticate();
-        $note = $noteObject->noteId($request->id);
-
-        if (!$note) {
-            Log::error('Notes Not Found', ['user' => $currentUser, 'id' => $request->id]);
-            return response()->json([
-                'status' => 404,
-                'message' => 'Notes not Found'
-            ], 404);
-        }
-
-        if ($note->archive == 1) {
-            $note->archive = 0;
-            $note->save();
-
-            Log::info('notes Archived', ['user_id' => $currentUser, 'note_id' => $request->id]);
-            return response()->json([
-                'status' => 201,
-                'message' => 'Note UnArchived Sucessfully'
-            ], 201);
-        } else {
-            return response()->json([
-                'status' => 401,
-                'message' => 'Note already Unarchived'
-            ], 401);
-        }
-    }
 
     /**
      * This function takes the User access token and checks if it 
@@ -606,19 +553,16 @@ class NotesController extends Controller
         $currentUser = JWTAuth::parseToken()->authenticate();
 
         if ($notes->user_id == auth()->id()) {
-            $usernotes = Notes::leftJoin('collaborators', 'collaborators.note_id', '=', 'notes.id')
-                ->leftJoin('label_notes', 'label_notes.note_id', '=', 'notes.id')
-                ->leftJoin('lables', 'lables.id', '=', 'label_notes.label_id')
-                ->select('notes.id', 'notes.title', 'notes.description', 'notes.pin', 'notes.archive', 'notes.colour', 'collaborators.email as Collaborator', 'lables.labelname')
-                ->where([['notes.user_id', '=', $currentUser->id], ['archive', '=', 1]])->orWhere('collaborators.email', '=', $currentUser->email)->get();
+
+            $usernotes = new Notes();
+            return response()->json([
+                'message' => 'Fetched Archived Notes',
+                $usernotes->getAllArchive($currentUser)
+            ], 201);
 
             if ($usernotes == '[]') {
                 return response()->json(['message' => 'Notes not found'], 404);
             }
-            return response()->json([
-                'message' => 'Fetched Archived Notes',
-                'notes' => $usernotes
-            ], 201);
         }
         return response()->json(['message' => 'Invalid token'], 403);
     }
@@ -680,26 +624,10 @@ class NotesController extends Controller
             ], 404);
         }
 
-        $colours  =  array(
-            'green' => 'rgb(0,255,0)',
-            'red' => 'rgb(255,0,0)',
-            'blue' => 'rgb(0,0,255)',
-            'yellow' => 'rgb(255,255,0)',
-            'grey' => 'rgb(128,128,128)',
-            'purple' => 'rgb(128,0,128)',
-            'brown' => 'rgb(165,42,42)',
-            'orange' => 'rgb(255,165,0)',
-            'pink' => 'rgb(255,192,203)',
-            'black' => 'rgb(0,0,0)',
-            'silver' => 'rgb(192,192,192)',
-            'teal' => 'rgb(0,128,128)',
-            'white' => 'rgb(255,255,255)',
-        );
-
         $colour_name = strtolower($request->colour);
 
-        if (isset($colours[$colour_name])) {
-            $note->colour = $colours[$colour_name];
+        if (isset(NotesController::$colours[$colour_name])) {
+            $note->colour = NotesController::$colours[$colour_name];
             $note->save();
 
             Log::info('notes coloured', ['user_id' => $currentUser, 'note_id' => $request->id]);
@@ -715,34 +643,7 @@ class NotesController extends Controller
         }
     }
 
-    /**
-     * Function used to view all notes
-     * 3 notes per page wise  will be displayed.
-     */
-    /**
-     * @OA\Get(
-     *   path="/api/auth/paginationNote",
-     *   summary="Display Paginate Notes",
-     *   description=" Display Paginate Notes ",
-     *   @OA\RequestBody(
-     *         
-     *    ),
-     *   @OA\Response(response=201, description="Pagination applied to all Notes"),
-     *   security = {
-     * {
-     * "Bearer" : {}}}
-     * )
-     */
-    public function paginationNote()
-    {
-        $allNotes = Notes::paginate(3);
 
-        return response()->json([
-            'status' => 201,
-            'message' => 'Pagination applied to all Notes',
-            'notes' =>  $allNotes,
-        ], 201);
-    }
 
     /**
      * This function takes the User access token and search key to search
@@ -784,21 +685,16 @@ class NotesController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
-
         $searchKey = $request->input('search');
         $currentUser = JWTAuth::parseToken()->authenticate();
 
         if ($currentUser) {
-
-            $usernotes = Notes::leftJoin('collaborators', 'collaborators.note_id', '=', 'notes.id')->leftJoin('label_notes', 'label_notes.note_id', '=', 'notes.id')->leftJoin('lables', 'lables.id', '=', 'label_notes.label_id')
-                ->select('notes.id', 'notes.title', 'notes.description', 'notes.pin', 'notes.archive', 'notes.colour', 'collaborators.email as Collaborator', 'lables.labelname')
-                ->where('notes.user_id', '=', $currentUser->id)->Where('notes.title', 'like', '%' . $searchKey . '%')
-                ->orWhere('notes.user_id', '=', $currentUser->id)->Where('notes.description', 'like', '%' . $searchKey . '%')
-                ->orWhere('notes.user_id', '=', $currentUser->id)->Where('lables.labelname', 'like', '%' . $searchKey . '%')
-                ->orWhere('collaborators.email', '=', $currentUser->email)->Where('notes.title', 'like', '%' . $searchKey . '%')
-                ->orWhere('collaborators.email', '=', $currentUser->email)->Where('notes.description', 'like', '%' . $searchKey . '%')
-                ->orWhere('collaborators.email', '=', $currentUser->email)->Where('lables.labelname', 'like', '%' . $searchKey . '%')
-                ->get();
+            $usernotes = new Notes();
+            return response()->json([
+                'status' => 201,
+                'message' => 'Fetched Notes Successfully',
+                $usernotes->searchNotes($currentUser, $searchKey)
+            ], 201);
 
             if ($usernotes == '[]') {
                 return response()->json([
@@ -806,11 +702,6 @@ class NotesController extends Controller
                     'message' => 'No results'
                 ], 404);
             }
-            return response()->json([
-                'status' => 201,
-                'message' => 'Fetched Notes Successfully',
-                'notes' => $usernotes
-            ], 201);
         }
         return response()->json([
             'status' => 403,

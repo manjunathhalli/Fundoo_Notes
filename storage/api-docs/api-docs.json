@@ -540,6 +540,15 @@
                                     },
                                     "description": {
                                         "type": "string"
+                                    },
+                                    "pin": {
+                                        "type": "integer"
+                                    },
+                                    "archive": {
+                                        "type": "integer"
+                                    },
+                                    "colour": {
+                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
@@ -844,24 +853,6 @@
                     },
                     "400": {
                         "description": "Colour Not Specified in the List"
-                    }
-                },
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ]
-            }
-        },
-        "/api/auth/paginationNote": {
-            "get": {
-                "summary": "Display Paginate Notes",
-                "description": " Display Paginate Notes ",
-                "operationId": "3b08f9755ac9b6beaabc79a0a282b9da",
-                "requestBody": {},
-                "responses": {
-                    "201": {
-                        "description": "Pagination applied to all Notes"
                     }
                 },
                 "security": [

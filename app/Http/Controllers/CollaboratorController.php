@@ -61,6 +61,8 @@ class CollaboratorController extends Controller
         $note = $currentUser->notes()->find($request->input('note_id'));
         $user = User::where('email', $request->email)->first();
 
+      // return  $note;
+
         if ($currentUser) {
             if ($note) {
                 if ($user) {
@@ -293,6 +295,10 @@ class CollaboratorController extends Controller
         if ($currentUser) {
             $collaborator = Collaborator::select('note_id', 'email')->where([['user_id', '=', $currentUser->id],])->get();
 
+            // $collaborator = new Collaborator();
+            // $collaborator->getAllNotes($currentUser);
+
+            
             if ($collaborator == '[]') {
                 return response()->json(['message' => 'Collaborators not found'], 404);
             }
