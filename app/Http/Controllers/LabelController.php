@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Label;
-use App\Models\Notes;
 use App\Models\LabelNotes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -65,6 +64,9 @@ class LabelController extends Controller
 
             $label = new Label();
             $label->labelname = $request->get('labelname');
+            Cache::remember('lables', 3600, function () {
+                return DB::table('lables')->get();
+            });
 
             if ($user->labels()->save($label)) {
                 return response()->json([
@@ -431,56 +433,5 @@ class LabelController extends Controller
             'status' => 401,
             'message' => 'Invalid authorization token'
         ], 401);
-    }
-
-    /**
-     * This function takes the User access token and label id and note id and 
-     * displays that respective label id.
-     * 
-     * 
-     * @return \Illuminate\Http\JsonResponse
-     */
-    /**
-     * @OA\Get(
-     *   path="/api/auth/displayNoteLabel",
-     *   summary="Display Label note",
-     *   description=" Display LabelNote ",
-     *   @OA\RequestBody(
-     *         
-     *    ),
-     *   @OA\Response(response=404, description="notes not Found"),
-     *   @OA\Response(response=200, description="labelsNote are Fetched Successfully"),
-     *   security = {
-     * {
-     * "Bearer" : {}}}
-     * )
-     */
-
-    public function displayNoteLabel()
-    {
-        $user = JWTAuth::parseToken()->authenticate();
-        if (!$user) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Invalid authorization token'
-            ], 404);
-        }
-
-        $labelnotes = LabelNotes::leftJoin('notes', 'notes.id', '=', 'label_notes.id')
-            ->leftJoin('lables', 'lables.id', '=', 'label_notes.label_id')
-            ->select('label_notes.id', 'lables.labelname', 'notes.title', 'notes.description', 'notes.pin', 'notes.archive', 'notes.colour')
-            ->where('label_notes.user_id', Auth::user()->id)->get();
-
-        if (!$labelnotes) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Notes not found'
-            ], 401);
-        }
-        return response()->json([
-            'status' => 201,
-            'message' => 'Labelnotes Fetched  Successfully',
-            'Labelnotes' => $labelnotes,
-        ], 201);
     }
 }

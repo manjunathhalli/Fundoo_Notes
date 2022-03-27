@@ -3,15 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Http\Mailer\SendEmailRequest;
+use App\Exceptions\FundoNoteException;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Notifications\PasswordResetRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class ForgotPasswordController extends Controller
 {
-
     /**
      *  @OA\Post(
      *   path="/api/auth/forgotpassword",
@@ -44,23 +45,43 @@ class ForgotPasswordController extends Controller
      */
     public function forgotPassword(Request $request)
     {
-        Validator::make($request->all(), [
-            'email' => 'required|string|email|max:100|unique:users',
-        ]);
+      
+        try {
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|string|email|max:100',
+            ]);
 
-        $user = User::where('email', $request->email)->first();
+            if($validator->fails()) {
+                return response()->json([
+                    'validation_error' => $validator->errors(),
+                ]);
+            }
 
-        if (!$user) {
-            return response()->json(['message' => 'wrong user with this Email Id '], 404);
+            $user = User::where('email', $request->email)->first();
+
+            if (!$user)
+            {
+                throw new FundoNoteException("we can not find a user with that email address", 404);
+            }
+
+            $token = Auth::fromUser($user);
+
+            if ($user)
+            {
+                // $sendEmail = new SendEmailRequest();
+                // $sendEmail->sendEmail($user->email, $token);
+                $delay = now()->addSeconds(5);
+                $user->notify((new PasswordResetRequest($user->email, $token))->delay($delay));
+            }
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'we have mailed your password reset link to respective E-mail'
+            ],200);
+        } catch (FundoNoteException $exception) {
+            return $exception->message();
         }
-        $token = Auth::fromUser($user);
-
-        if ($user) {
-            $sendEmail = new SendEmailRequest();
-            $sendEmail->sendEmail($user->email, $token);
-        }
-        Log::info('Forgot PassWord Link : ' . 'Email Id :' . $request->email);
-        return response()->json(['message' => 'Reset password link sent to email id'], 200);
+    ;
     }
 
 

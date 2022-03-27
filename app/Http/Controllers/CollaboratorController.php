@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Mailer\SendEmailRequest;
-use App\Models\Collaborator;
 use App\Models\Notes;
 use App\Models\User;
 
@@ -60,9 +59,6 @@ class CollaboratorController extends Controller
         $currentUser = JWTAuth::parseToken()->authenticate();
         $note = $currentUser->notes()->find($request->input('note_id'));
         $user = User::where('email', $request->email)->first();
-
-      // return  $note;
-
         if ($currentUser) {
             if ($note) {
                 if ($user) {

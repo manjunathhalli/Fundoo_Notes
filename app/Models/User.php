@@ -37,6 +37,7 @@ class User extends Authenticatable implements JWTSubject
 
 
     //mutators
+    
     public function setFirstnameAttribute($value)
     {
         $this->attributes['first_name'] = ucfirst($value);
@@ -48,9 +49,10 @@ class User extends Authenticatable implements JWTSubject
     }
 
     //accessors
-    public function getFirstnameAttribute($first_name)
+
+    public function getFirstNameAttribute($value)
     {
-        return 'Mr '.ucfirst($first_name);
+        return ucfirst($value);
     }
 
 

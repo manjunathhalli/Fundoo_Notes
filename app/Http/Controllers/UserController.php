@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Auth;
 use Validator;
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -43,7 +44,7 @@ class UserController extends Controller
      *            ),
      *        ),
      *    ),
-     *   @OA\Response(response=201, description="User Scceesfully Registerd"),
+     *   @OA\Response(response=200, description="User Scceesfully Registerd"),
      * )  
     
     /**
@@ -62,18 +63,19 @@ class UserController extends Controller
             'confirm_password' => 'required|same:password',
 
         ]);
-
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
         User::create(array_merge(
             $validator->validated(),
             ['password' => bcrypt($request->password)]
-
         ));
+        Cache::remember('users', 3600, function () {
+            return DB::table('users')->get();
+        });
         return response()->json([
             'message' => 'User Scceesfully Registerd',
-        ], 201);
+        ], 200);
     }
 
 
@@ -115,6 +117,9 @@ class UserController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        Cache::remember('users', 3600, function () {
+            return DB::table('users')->get();
+        });
         $user = User::where('email', $request->email)->first();
         if (!$user) {
             Log::error('User failed to login.', ['id' => $request->email]);
