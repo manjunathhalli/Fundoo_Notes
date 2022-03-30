@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Validator;
 use App\Models\User;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * This controller is for user registration, login, logout
@@ -74,7 +76,7 @@ class UserController extends Controller
             return DB::table('users')->get();
         });
         return response()->json([
-            'message' => 'User Scceesfully Registerd',
+            'message' => 'User Successfully Registerd',
         ], 200);
     }
 
@@ -210,5 +212,93 @@ class UserController extends Controller
         return response()->json([
             'message' => 'User logged out'
         ], 201);
+    }
+
+
+    /**
+     * This function will take image
+     * as input and save in AWS S3
+     * and will save link in database
+     * @return \Illuminate\Http\JsonResponse
+     */
+    /**
+     * @OA\Post(
+     *   path="/api/auth/addProfileImage",
+     *   summary="addProfileImage",
+     *   description=" addProfileImage ",
+     *  @OA\RequestBody(
+     *         @OA\JsonContent(),
+     *         @OA\MediaType(
+     *            mediaType="multipart/form-data",
+     *            @OA\Schema(
+     *               type="object",
+     *                 required={"image"},
+     *               @OA\Property(property="image", type="file"),
+     *            ),
+     *        ),
+     *    ),
+     *   @OA\Response(response=201, description="ProfilePic successfully Added"),
+     *  @OA\Response(response=400, description="We cannot find User"),
+     * )
+     */
+
+    public function addProfileImage(Request $request)
+    {
+
+        $request->validate([
+
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+
+        ]);
+
+        $user = JWTAuth::user();
+        $user = User::where('email', $user->email)->first();
+
+        if ($user) {
+            $imageName = time() . '.' . $request->image->extension();
+
+            $path = Storage::disk('s3')->put('images', $request->image);
+            $url = env('AWS_URL') . $path;
+            $temp = User::where('email', $user->email)
+                ->update(['profilepic' => $url]);
+            return response()->json(['message' => 'Profilepic Successsfully Added', 'URL' => $url], 201);
+        } else {
+            return response()->json(['message' => 'We cannot find a user'], 400);
+        }
+    }
+
+
+    /**
+     * This function will take image
+     * as input and save in AWS S3
+     * and will save link in database
+     * @return \Illuminate\Http\JsonResponse
+     */
+
+    public function updateProfileImage(Request $request)
+    {
+        $request->validate([
+
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+
+        ]);
+        $user = JWTAuth::user();
+
+        $user = User::where('email', $user->email)->first();
+        if ($user) {
+            $imageName = time() . '.' . $request->image->extension();
+            $profile_pic = $user->profilepic;
+
+            $path = Storage::disk('s3')->put('images', $request->image);
+            $url = env('AWS_URL') . $path;
+            $temp = User::where('email', $user->email)
+                ->update(['profilepic' => $url]);
+            return response()->json([
+                'piv' => $profile_pic,
+                'message' => 'Profilepic Successsfully update', 'URL' => $url
+            ], 201);
+        } else {
+            return response()->json(['message' => 'We cannot find a user'], 400);
+        }
     }
 }

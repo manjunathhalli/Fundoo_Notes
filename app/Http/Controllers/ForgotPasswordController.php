@@ -68,10 +68,10 @@ class ForgotPasswordController extends Controller
 
             if ($user)
             {
-                // $sendEmail = new SendEmailRequest();
-                // $sendEmail->sendEmail($user->email, $token);
-                $delay = now()->addSeconds(5);
-                $user->notify((new PasswordResetRequest($user->email, $token))->delay($delay));
+                $sendEmail = new SendEmailRequest();
+                $sendEmail->sendEmail($user->email, $token);
+                // $delay = now()->addSeconds(5);
+                // $user->notify((new PasswordResetRequest($user->email, $token))->delay($delay));
             }
 
             return response()->json([

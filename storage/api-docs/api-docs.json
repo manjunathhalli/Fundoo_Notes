@@ -500,27 +500,6 @@
                 ]
             }
         },
-        "/api/auth/displayNoteLabel": {
-            "get": {
-                "summary": "Display Label note",
-                "description": " Display LabelNote ",
-                "operationId": "e986299fe7196ca36e72664266d74587",
-                "requestBody": {},
-                "responses": {
-                    "404": {
-                        "description": "notes not Found"
-                    },
-                    "200": {
-                        "description": "labelsNote are Fetched Successfully"
-                    }
-                },
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ]
-            }
-        },
         "/api/auth/createNotes": {
             "post": {
                 "summary": "create note",
@@ -944,7 +923,7 @@
                     }
                 },
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "User Scceesfully Registerd"
                     }
                 }
@@ -1035,6 +1014,41 @@
                 "responses": {
                     "201": {
                         "description": "User successfully signed out"
+                    }
+                }
+            }
+        },
+        "/api/auth/addProfileImage": {
+            "post": {
+                "summary": "addProfileImage",
+                "description": " addProfileImage ",
+                "operationId": "b67e50a7415e01cd33367f16a314b526",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "image"
+                                ],
+                                "properties": {
+                                    "image": {
+                                        "type": "file"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "ProfilePic successfully Added"
+                    },
+                    "400": {
+                        "description": "We cannot find User"
                     }
                 }
             }
