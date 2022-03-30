@@ -104,8 +104,6 @@ class NotesController extends Controller
             $note->pin = $pin;
             $note->archive = $archive;
             $note->colour = $colour;
-
-
             $colour_name = strtolower($request->colour);
 
             if (isset(NotesController::$colours[$colour_name])) {

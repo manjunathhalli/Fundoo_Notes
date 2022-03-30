@@ -221,26 +221,6 @@ class UserController extends Controller
      * and will save link in database
      * @return \Illuminate\Http\JsonResponse
      */
-    /**
-     * @OA\Post(
-     *   path="/api/auth/addProfileImage",
-     *   summary="addProfileImage",
-     *   description=" addProfileImage ",
-     *  @OA\RequestBody(
-     *         @OA\JsonContent(),
-     *         @OA\MediaType(
-     *            mediaType="multipart/form-data",
-     *            @OA\Schema(
-     *               type="object",
-     *                 required={"image"},
-     *               @OA\Property(property="image", type="file"),
-     *            ),
-     *        ),
-     *    ),
-     *   @OA\Response(response=201, description="ProfilePic successfully Added"),
-     *  @OA\Response(response=400, description="We cannot find User"),
-     * )
-     */
 
     public function addProfileImage(Request $request)
     {
@@ -255,11 +235,9 @@ class UserController extends Controller
         $user = User::where('email', $user->email)->first();
 
         if ($user) {
-            $imageName = time() . '.' . $request->image->extension();
-
             $path = Storage::disk('s3')->put('images', $request->image);
             $url = env('AWS_URL') . $path;
-            $temp = User::where('email', $user->email)
+            User::where('email', $user->email)
                 ->update(['profilepic' => $url]);
             return response()->json(['message' => 'Profilepic Successsfully Added', 'URL' => $url], 201);
         } else {
@@ -286,16 +264,50 @@ class UserController extends Controller
 
         $user = User::where('email', $user->email)->first();
         if ($user) {
-            $imageName = time() . '.' . $request->image->extension();
             $profile_pic = $user->profilepic;
+            if ($request->image) {
+                $path = str_replace(env('AWS_URL'), '', $user->profilepic);
 
-            $path = Storage::disk('s3')->put('images', $request->image);
-            $url = env('AWS_URL') . $path;
-            $temp = User::where('email', $user->email)
-                ->update(['profilepic' => $url]);
+                if (Storage::disk('s3')->exists($path)) {
+                    Storage::disk('s3')->delete($path);
+                }
+                $path = Storage::disk('s3')->put('images', $request->image);
+                $pathurl = env('AWS_URL') . $path;
+                $user->profilepic = $pathurl;
+                $user->save();
+            }
             return response()->json([
                 'piv' => $profile_pic,
-                'message' => 'Profilepic Successsfully update', 'URL' => $url
+                'message' => 'Profilepic Successsfully update', 'URL' => $pathurl
+            ], 201);
+        } else {
+            return response()->json(['message' => 'We cannot find a user'], 400);
+        }
+    }
+
+    /**
+     * This function will remove image
+     * from AWS S3
+     * and will remove link from database
+     * @return \Illuminate\Http\JsonResponse
+     */
+
+    public function deleteProfileImage()
+    {
+        $user = JWTAuth::user();
+
+        $user = User::where('email', $user->email)->first();
+        if ($user) {
+            $profile_pic = $user->profilepic;
+            $path = str_replace(env('AWS_URL'), '', $user->profilepic);
+
+            if (Storage::disk('s3')->exists($path)) {
+                Storage::disk('s3')->delete($path);
+            }
+            $user->delete($user->email);
+            $user->save();
+            return response()->json([
+                'message' => 'Profilepic Deleted Successsfully '
             ], 201);
         } else {
             return response()->json(['message' => 'We cannot find a user'], 400);
