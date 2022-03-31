@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Mailer\SendEmailRequest;
+use App\Notifications\EmailToCollab;
+use App\Models\Collaborator;
 use App\Models\Notes;
 use App\Models\User;
 
@@ -77,8 +79,11 @@ class CollaboratorController extends Controller
                     $collab->email = $request->get('email');
                     $collaborator = Notes::select('id', 'title', 'description', 'pin',)->where([['id', '=', $request->note_id]])->get();
                     if ($currentUser->collaborators()->save($collab)) {
-                        $sendEmail = new SendEmailRequest();
-                        $sendEmail->sendEmailToCollab($request->email, $collaborator, $currentUser->email);
+                        // $sendEmail = new SendEmailRequest();
+                        // $sendEmail->sendEmailToCollab($request->email, $collaborator, $currentUser->email);
+
+                        $delay = now()->addSeconds(60);
+                        $user->notify((new EmailToCollab($request->email, $collaborator))->delay($delay));
                         return response()->json(['message' => 'Collaborator created Sucessfully'], 201);
                     }
                     return response()->json(['message' => 'Could not add collab'], 404);
@@ -294,7 +299,6 @@ class CollaboratorController extends Controller
             // $collaborator = new Collaborator();
             // $collaborator->getAllNotes($currentUser);
 
-            
             if ($collaborator == '[]') {
                 return response()->json(['message' => 'Collaborators not found'], 404);
             }

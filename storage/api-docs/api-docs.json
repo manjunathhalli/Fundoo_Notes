@@ -1020,8 +1020,8 @@
         },
         "/api/auth/addProfileImage": {
             "post": {
-                "summary": "addProfileImage",
-                "description": " addProfileImage ",
+                "summary": "Add profile",
+                "description": "user profile image",
                 "operationId": "b67e50a7415e01cd33367f16a314b526",
                 "requestBody": {
                     "content": {
@@ -1045,12 +1045,97 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "ProfilePic successfully Added"
+                        "description": "Profilepic Successsfully Added"
                     },
                     "400": {
-                        "description": "We cannot find User"
+                        "description": "We cannot find a user"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/updateProfileImage": {
+            "post": {
+                "summary": "update profile",
+                "description": "updating profile image",
+                "operationId": "3b70d43c8fed32fe4d5d2f2a65bcb2e0",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "image"
+                                ],
+                                "properties": {
+                                    "image": {
+                                        "type": "file"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Profilepic Successsfully updated"
+                    },
+                    "400": {
+                        "description": "We cannot find a user"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/deleteProfileImage": {
+            "post": {
+                "summary": "delete profile",
+                "description": "deleted profile image",
+                "operationId": "5e3629fc160cf758786c1f3904a3d51e",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "image"
+                                ],
+                                "properties": {
+                                    "image": {
+                                        "type": "file"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Profilepic Deleted Successsfully"
+                    },
+                    "400": {
+                        "description": "We cannot find a user"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
             }
         }
     },

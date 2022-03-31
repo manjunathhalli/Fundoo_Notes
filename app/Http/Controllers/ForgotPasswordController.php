@@ -45,13 +45,13 @@ class ForgotPasswordController extends Controller
      */
     public function forgotPassword(Request $request)
     {
-      
+
         try {
             $validator = Validator::make($request->all(), [
                 'email' => 'required|string|email|max:100',
             ]);
 
-            if($validator->fails()) {
+            if ($validator->fails()) {
                 return response()->json([
                     'validation_error' => $validator->errors(),
                 ]);
@@ -59,29 +59,26 @@ class ForgotPasswordController extends Controller
 
             $user = User::where('email', $request->email)->first();
 
-            if (!$user)
-            {
+            if (!$user) {
                 throw new FundoNoteException("we can not find a user with that email address", 404);
             }
 
             $token = Auth::fromUser($user);
 
-            if ($user)
-            {
-                $sendEmail = new SendEmailRequest();
-                $sendEmail->sendEmail($user->email, $token);
-                // $delay = now()->addSeconds(5);
-                // $user->notify((new PasswordResetRequest($user->email, $token))->delay($delay));
+            if ($user) {
+                // $sendEmail = new SendEmailRequest();
+                // $sendEmail->sendEmail($user->email, $token);
+                $delay = now()->addSeconds(5);
+                $user->notify((new PasswordResetRequest($user->email, $token))->delay($delay));
             }
 
             return response()->json([
                 'status' => 200,
                 'message' => 'we have mailed your password reset link to respective E-mail'
-            ],200);
+            ], 200);
         } catch (FundoNoteException $exception) {
             return $exception->message();
-        }
-    ;
+        };
     }
 
 
