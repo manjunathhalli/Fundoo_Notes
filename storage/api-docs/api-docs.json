@@ -1099,25 +1099,13 @@
             }
         },
         "/api/auth/deleteProfileImage": {
-            "post": {
+            "delete": {
                 "summary": "delete profile",
-                "description": "deleted profile image",
-                "operationId": "5e3629fc160cf758786c1f3904a3d51e",
+                "description": "delete profile image",
+                "operationId": "322640b8b7ae9971a0516e127edc3f3e",
                 "requestBody": {
                     "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "required": [
-                                    "image"
-                                ],
-                                "properties": {
-                                    "image": {
-                                        "type": "file"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        },
+                        "multipart/form-data": {},
                         "application/json": {
                             "schema": {}
                         }

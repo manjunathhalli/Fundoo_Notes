@@ -332,19 +332,14 @@ class UserController extends Controller
     }
 
     /**
-     * @OA\Post(
+     * @OA\Delete(
      *   path="/api/auth/deleteProfileImage",
      *   summary="delete profile",
-     *   description="deleted profile image",
+     *   description="delete profile image",
      *   @OA\RequestBody(
      *         @OA\JsonContent(),
      *         @OA\MediaType(
      *            mediaType="multipart/form-data",
-     *            @OA\Schema(
-     *               type="object",
-     *               required={"image"},
-     *               @OA\Property(property="image", type="file"),
-     *            ),
      *        ),
      *    ),
      *   @OA\Response(response=201, description="Profilepic Deleted Successsfully"),
