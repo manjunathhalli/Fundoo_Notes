@@ -12,7 +12,7 @@ class Notes extends Model
     protected $table = 'notes';
     protected $fillable = [
         'title',
-        'descrption',
+        'description',
         'label_notes_id'
     ];
 
@@ -40,7 +40,7 @@ class Notes extends Model
             ->leftJoin('label_notes', 'label_notes.note_id', '=', 'notes.id')
             ->leftJoin('lables', 'lables.id', '=', 'label_notes.label_id')
             ->select('notes.id', 'notes.title', 'notes.description', 'notes.pin', 'notes.archive', 'notes.colour', 'lables.labelname', 'collaborators.email as Collaborator',)
-            ->where([['notes.user_id', '=', $user->id],])->orWhere('collaborators.email', '=', $user->email)->paginate(5);
+            ->where([['notes.user_id', '=', $user->id],])->orWhere('collaborators.email', '=', $user->email)->get();
         return $notes;
     }
 
@@ -50,7 +50,7 @@ class Notes extends Model
             ->leftJoin('label_notes', 'label_notes.note_id', '=', 'notes.id')
             ->leftJoin('lables', 'lables.id', '=', 'label_notes.label_id')
             ->select('notes.id', 'notes.title', 'notes.description', 'notes.pin', 'notes.archive', 'notes.colour', 'collaborators.email as Collaborator', 'lables.labelname')
-            ->where([['notes.user_id', '=', $currentUser->id], ['pin', '=', 1]])->orWhere('collaborators.email', '=', $currentUser->email)->paginate(5);
+            ->where([['notes.user_id', '=', $currentUser->id], ['pin', '=', 1]])->orWhere('collaborators.email', '=', $currentUser->email)->get();
         return $usernotes;
     }
 
@@ -60,7 +60,7 @@ class Notes extends Model
             ->leftJoin('label_notes', 'label_notes.note_id', '=', 'notes.id')
             ->leftJoin('lables', 'lables.id', '=', 'label_notes.label_id')
             ->select('notes.id', 'notes.title', 'notes.description', 'notes.pin', 'notes.archive', 'notes.colour', 'collaborators.email as Collaborator', 'lables.labelname')
-            ->where([['notes.user_id', '=', $currentUser->id], ['archive', '=', 1]])->orWhere('collaborators.email', '=', $currentUser->email)->paginate(5);
+            ->where([['notes.user_id', '=', $currentUser->id], ['archive', '=', 1]])->orWhere('collaborators.email', '=', $currentUser->email)->get();
         return $usernotes;
     }
 
@@ -74,7 +74,7 @@ class Notes extends Model
             ->orWhere('collaborators.email', '=', $currentUser->email)->Where('notes.title', 'like', '%' . $searchKey . '%')
             ->orWhere('collaborators.email', '=', $currentUser->email)->Where('notes.description', 'like', '%' . $searchKey . '%')
             ->orWhere('collaborators.email', '=', $currentUser->email)->Where('lables.labelname', 'like', '%' . $searchKey . '%')
-            ->paginate(5);
+            ->get();
         return  $usernotes;
     }
 }

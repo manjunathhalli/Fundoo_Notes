@@ -43,7 +43,7 @@ class PasswordResetRequest extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        $url = "/api/auth/resetpassword" .$this->token;
+        $url = "/api/auth/resetpassword".$this->token;
         return (new MailMessage)
                     ->line('This mail is regarding reset password.')
                     ->action('Reset Password ', url($url))

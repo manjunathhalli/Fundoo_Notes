@@ -15,7 +15,7 @@ class ForgotPasswordController extends Controller
 {
     /**
      *  @OA\Post(
-     *   path="/api/auth/forgotpassword",
+     *   path="/api/auth/forgotPassword",
      *   summary="forgot password",
      *   description="forgot user password",
      *   @OA\RequestBody(

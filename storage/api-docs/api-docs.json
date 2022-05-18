@@ -166,11 +166,11 @@
                 ]
             }
         },
-        "/api/auth/forgotpassword": {
+        "/api/auth/forgotPassword": {
             "post": {
                 "summary": "forgot password",
                 "description": "forgot user password",
-                "operationId": "186a73907a51e79b61ee87564453da94",
+                "operationId": "6aff3ba2c201572b8d94094df2aea4b7",
                 "requestBody": {
                     "content": {
                         "multipart/form-data": {
@@ -507,7 +507,7 @@
                 "operationId": "8aa521064947715a5fdc7f892ef0117a",
                 "requestBody": {
                     "content": {
-                        "multipart/form-data": {
+                        "application/json": {
                             "schema": {
                                 "required": [
                                     "title",
@@ -532,9 +532,6 @@
                                 },
                                 "type": "object"
                             }
-                        },
-                        "application/json": {
-                            "schema": {}
                         }
                     }
                 },
@@ -577,6 +574,44 @@
                 ]
             }
         },
+        "/api/auth/displayNoteById": {
+            "post": {
+                "summary": "display Notes",
+                "description": "user display Notes",
+                "operationId": "ce4a39d28430ca625cacd5c7ab681b75",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id"
+                                ],
+                                "properties": {
+                                    "id": {}
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Fetched Notes Successfully"
+                    },
+                    "401": {
+                        "description": "Invalid authorization token"
+                    },
+                    "404": {
+                        "description": "Notes Not Found"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
         "/api/auth/updateNoteById": {
             "post": {
                 "summary": "update note",
@@ -584,7 +619,7 @@
                 "operationId": "d5fa69313342590d7ae2dd4b243a1d65",
                 "requestBody": {
                     "content": {
-                        "application/x-www-form-urlencoded": {
+                        "application/json": {
                             "schema": {
                                 "required": [
                                     "id",
@@ -602,9 +637,6 @@
                                 },
                                 "type": "object"
                             }
-                        },
-                        "application/json": {
-                            "schema": {}
                         }
                     }
                 },
@@ -627,13 +659,13 @@
             }
         },
         "/api/auth/deleteNoteById": {
-            "post": {
+            "delete": {
                 "summary": "delete note",
                 "description": "delete user note",
-                "operationId": "6fa2f7be0614f8bfc72ad4a90d037160",
+                "operationId": "67b7128c17719840f962b12392a46ddd",
                 "requestBody": {
                     "content": {
-                        "application/x-www-form-urlencoded": {
+                        "application/json": {
                             "schema": {
                                 "required": [
                                     "id"
@@ -645,9 +677,6 @@
                                 },
                                 "type": "object"
                             }
-                        },
-                        "application/json": {
-                            "schema": {}
                         }
                     }
                 },
@@ -670,13 +699,13 @@
             }
         },
         "/api/auth/pinNoteById": {
-            "post": {
+            "put": {
                 "summary": "Pin Note",
                 "description": " Pin Note ",
-                "operationId": "2e1d7173b89fa51f02111ed713e89efa",
+                "operationId": "8ff8e6a3bb09201e2d64cae287d7ce80",
                 "requestBody": {
                     "content": {
-                        "multipart/form-data": {
+                        "application/json": {
                             "schema": {
                                 "required": [
                                     "id"
@@ -688,9 +717,6 @@
                                 },
                                 "type": "object"
                             }
-                        },
-                        "application/json": {
-                            "schema": {}
                         }
                     }
                 },
@@ -731,13 +757,13 @@
             }
         },
         "/api/auth/archiveNoteById": {
-            "post": {
+            "put": {
                 "summary": "Archive Note",
                 "description": " Archive Note ",
-                "operationId": "d161079104ec20f554ac3a10c5e01394",
+                "operationId": "08e0fbec522d1225c40e36c561b9a38f",
                 "requestBody": {
                     "content": {
-                        "multipart/form-data": {
+                        "application/json": {
                             "schema": {
                                 "required": [
                                     "id"
@@ -749,9 +775,6 @@
                                 },
                                 "type": "object"
                             }
-                        },
-                        "application/json": {
-                            "schema": {}
                         }
                     }
                 },
@@ -795,13 +818,13 @@
             }
         },
         "/api/auth/colourNoteById": {
-            "post": {
+            "put": {
                 "summary": "Colour Note",
                 "description": " Colour Note ",
-                "operationId": "8e86cf0f3b2c3fa1727daa2f31814261",
+                "operationId": "b91af31c9df9df50890b61227c1420d1",
                 "requestBody": {
                     "content": {
-                        "multipart/form-data": {
+                        "application/json": {
                             "schema": {
                                 "required": [
                                     "id",
@@ -817,9 +840,6 @@
                                 },
                                 "type": "object"
                             }
-                        },
-                        "application/json": {
-                            "schema": {}
                         }
                     }
                 },
@@ -848,7 +868,7 @@
                 "operationId": "f53ddd4bbcb97d9de147c323212df507",
                 "requestBody": {
                     "content": {
-                        "multipart/form-data": {
+                        "application/json": {
                             "schema": {
                                 "required": [
                                     "search"
@@ -860,9 +880,6 @@
                                 },
                                 "type": "object"
                             }
-                        },
-                        "application/json": {
-                            "schema": {}
                         }
                     }
                 },
@@ -925,6 +942,9 @@
                 "responses": {
                     "200": {
                         "description": "User Scceesfully Registerd"
+                    },
+                    "401": {
+                        "description": "The email has already been taken"
                     }
                 }
             }

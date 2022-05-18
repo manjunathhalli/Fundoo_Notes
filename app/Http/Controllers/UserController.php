@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use App\Exceptions\FundoNoteException;
 
 /**
  * This controller is for user registration, login, logout
@@ -47,6 +48,7 @@ class UserController extends Controller
      *        ),
      *    ),
      *   @OA\Response(response=200, description="User Scceesfully Registerd"),
+     *   @OA\Response(response=401, description="The email has already been taken"),
      * )  
     
     /**
@@ -68,15 +70,27 @@ class UserController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
-        User::create(array_merge(
-            $validator->validated(),
-            ['password' => bcrypt($request->password)]
-        ));
-        Cache::remember('users', 3600, function () {
-            return DB::table('users')->get();
-        });
+        try {
+            $user = User::where('email', $request->email)->first();
+            if ($user) {
+                throw new FundoNoteException("The email has already been taken", 401);
+            }
+
+            $user = User::create([
+                'first_name' => $request->firs_tname,
+                'last_name' => $request->last_name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+            ]);
+            Cache::remember('users', 3600, function () {
+                return DB::table('users')->get();
+            });
+        } catch (FundoNoteException $e) {
+
+            return response()->json(['message' => $e->message(), 'status' => $e->statusCode()]);
+        }
         return response()->json([
-            'message' => 'User Successfully Registerd',
+            'message' => 'User successfully registered',
         ], 200);
     }
 
@@ -147,7 +161,7 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function crateNewToken($token)
+    public function createNewToken($token)
     {
         return response()->json([
             'access_token' => $token,

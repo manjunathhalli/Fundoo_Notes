@@ -35,9 +35,8 @@ class NotesController extends Controller
      *   summary="create note",
      *   description="create user note",
      *   @OA\RequestBody(
-     *         @OA\JsonContent(),
      *         @OA\MediaType(
-     *            mediaType="multipart/form-data",
+     *            mediaType="application/json",
      *            @OA\Schema(
      *               type="object",
      *               required={"title","description"},
@@ -178,6 +177,33 @@ class NotesController extends Controller
         }
     }
 
+    /**
+     *   @OA\post(
+     *   path="/api/auth/displayNoteById",
+     *   summary="display Notes",
+     *   description="user display Notes",
+     *   @OA\RequestBody(
+     *     @OA\MediaType(
+     *            mediaType="application/json",
+     *            @OA\Schema(
+     *               type="object",
+     *               required={"id"},
+     *                @OA\Property(property="id"),
+     *            ),
+     *        ),
+     *    ),
+     *   @OA\Response(response=201, description="Fetched Notes Successfully"),
+     *   @OA\Response(response=401, description="Invalid authorization token"),
+     *  @OA\Response(response=404, description="Notes Not Found"),
+     *   security={
+     *       {"Bearer": {}}
+     *     }
+     * )
+     * This function takes access token and note id and finds
+     * it successfully returns that note id
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
 
     public function displayNoteById(Request $request)
     {
@@ -208,9 +234,8 @@ class NotesController extends Controller
      *   summary="update note",
      *   description="update user note",
      *   @OA\RequestBody(
-     *         @OA\JsonContent(),
      *         @OA\MediaType(
-     *            mediaType="application/x-www-form-urlencoded",
+     *            mediaType="application/json",
      *            @OA\Schema(
      *               type="object",
      *               required={"id","title","description"},
@@ -274,14 +299,13 @@ class NotesController extends Controller
     }
 
     /**
-     *   @OA\post(
+     *   @OA\delete(
      *   path="/api/auth/deleteNoteById",
      *   summary="delete note",
      *   description="delete user note",
      *   @OA\RequestBody(
-     *         @OA\JsonContent(),
      *         @OA\MediaType(
-     *            mediaType="application/x-www-form-urlencoded",
+     *            mediaType="application/json",
      *            @OA\Schema(
      *               type="object",
      *               required={"id"},
@@ -345,14 +369,13 @@ class NotesController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     /**
-     * @OA\Post(
+     * @OA\put(
      *   path="/api/auth/pinNoteById",
      *   summary="Pin Note",
      *   description=" Pin Note ",
      *   @OA\RequestBody(
-     *         @OA\JsonContent(),
      *         @OA\MediaType(
-     *            mediaType="multipart/form-data",
+     *            mediaType="application/json",
      *            @OA\Schema(
      *               type="object",
      *               required={"id"},
@@ -463,14 +486,13 @@ class NotesController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     /**
-     * @OA\Post(
+     * @OA\Put(
      *   path="/api/auth/archiveNoteById",
      *   summary="Archive Note",
      *   description=" Archive Note ",
      *   @OA\RequestBody(
-     *         @OA\JsonContent(),
      *         @OA\MediaType(
-     *            mediaType="multipart/form-data",
+     *            mediaType="application/json",
      *            @OA\Schema(
      *               type="object",
      *               required={"id"},
@@ -578,17 +600,16 @@ class NotesController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     /**
-     * @OA\Post(
+     * @OA\Put(
      *   path="/api/auth/colourNoteById",
      *   summary="Colour Note",
      *   description=" Colour Note ",
      *   @OA\RequestBody(
-     *         @OA\JsonContent(),
      *         @OA\MediaType(
-     *            mediaType="multipart/form-data",
+     *            mediaType="application/json",
      *            @OA\Schema(
      *               type="object",
-     *               required={"id" , "colour"},
+     *               required={"id" ,"colour"},
      *               @OA\Property(property="id", type="integer"),
      *               @OA\Property(property="colour", type="string"),
      *            ),
@@ -661,9 +682,8 @@ class NotesController extends Controller
      *   summary="Search Note",
      *   description=" Search Note ",
      *   @OA\RequestBody(
-     *         @OA\JsonContent(),
      *         @OA\MediaType(
-     *            mediaType="multipart/form-data",
+     *            mediaType="application/json",
      *            @OA\Schema(
      *               type="object",
      *               required={"search"},

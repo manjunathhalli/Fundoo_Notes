@@ -46,10 +46,10 @@ class EmailToCollab extends Notification
     {
         $url = url("/api/auth/login");
         return (new MailMessage)
-                    ->line('('.$this->email. ') shared a note with you.')
-                    ->line('NOTES:-' . $this->title)
-                    ->action('Open in Fundoo Note', url($url))
-                    ->line('Thank you for using our application!');
+            ->line('(' . $this->email . ') shared a note with you.')
+            ->line('NOTES:-' . $this->title)
+            ->action('Open in Fundoo Note', url($url))
+            ->line('Thank you for using our application!');
     }
 
     /**

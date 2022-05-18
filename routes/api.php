@@ -38,14 +38,14 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
     Route::get('/displayNotes', [NotesController::class, 'displayNotes']);
     Route::post('/displayNoteById', [NotesController::class, 'displayNoteById']);
     Route::post('/updateNoteById', [NotesController::class, 'updateNoteById']);
-    Route::post('/deleteNoteById', [NotesController::class, 'deleteNoteById']);
-    Route::post('/pinNoteById', [NotesController::class, 'pinNoteById']);
+    Route::delete('/deleteNoteById', [NotesController::class, 'deleteNoteById']);
+    Route::put('/pinNoteById', [NotesController::class, 'pinNoteById']);
     Route::post('/unpinNoteById', [NotesController::class, 'unpinNoteById']);
     Route::get('/getAllPinnedNotes', [NotesController::class, 'getAllPinnedNotes']);
-    Route::post('/archiveNoteById', [NotesController::class, 'archiveNoteById']);
+    Route::put('/archiveNoteById', [NotesController::class, 'archiveNoteById']);
     Route::post('/unarchiveNoteById', [NotesController::class, 'unarchiveNoteById']);
     Route::get('/getAllArchivedNotes', [NotesController::class, 'getAllArchivedNotes']);
-    Route::post('/colourNoteById', [NotesController::class, 'colourNoteById']);
+    Route::put('/colourNoteById', [NotesController::class, 'colourNoteById']);
     Route::post('/paginationNote', [NotesController::class, 'paginationNote']);
     Route::post('/searchAllNotes', [NotesController::class, 'searchAllNotes']);
 
